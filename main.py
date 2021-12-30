@@ -35,6 +35,10 @@ floor_base = pygame.image.load("flappy-bird-assets/sprites/base.png").convert()
 floor_base = pygame.transform.scale2x(floor_base)
 floor_x_pos = 0
 
+message = pygame.image.load("flappy-bird-assets/sprites/message.png").convert_alpha()
+message = pygame.transform.scale2x(message)
+game_over_rect = message.get_rect(center=(288, 512))
+
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -59,7 +63,7 @@ while True:
         # check for collision
         game_active = check_collision()
     else:
-        print('game over')
+        screen.blit(message, game_over_rect)
 
     # create floor
     floor_x_pos -= 1
