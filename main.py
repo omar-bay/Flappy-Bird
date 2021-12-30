@@ -6,7 +6,12 @@ def game_floor():
     screen.blit(floor_base, (floor_x_pos, 900))
     screen.blit(floor_base, (floor_x_pos+576, 900))
 
-def check_collision():
+def check_collision(pipes):
+    # hit pipe
+    for pipe in pipes:
+        if bird_rect.colliderect(pipe):
+            return False
+
     # check floor not hit
     if bird_rect.top <= -100 or bird_rect.bottom >=900:
         print('hit head')
@@ -80,6 +85,7 @@ while True:
             if event.key == pygame.K_SPACE and not game_active:
                 bird.rect.center = (100, 512)
                 bird_movement = 0
+                pipe_list.clear()
                 game_active = True
         if event.type == SPAWNPIPE and game_active:
             pipe_list.extend(create_pipe())
@@ -96,7 +102,7 @@ while True:
         draw_pipes(pipe_list)
 
         # check for collision
-        game_active = check_collision()
+        game_active = check_collision(pipe_list)
     else:
         screen.blit(message, game_over_rect)
 
