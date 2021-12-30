@@ -13,6 +13,26 @@ def check_collision():
         return False
     return True
 
+def create_pipe():
+    random_pipe_pos = random.choice(pipe_height)
+    top_pipe = pipe_surface.get_rect(midbottom=(700, random_pipe_pos-300))
+    bottom_pipe = pipe_surface.get_rect(midtop=(700, random_pipe_pos))
+    return bottom_pipe, top_pipe
+
+def move_pipes(pipes):
+    for pipe in pipes:
+        pipe.centerx -= 5
+
+    return pipes
+
+def draw_pipes(pipes):
+    for pipe in pipes:
+        if pipe.bottom >= 1024:
+            screen.blit(pipe_surface, pipe)
+        else:
+            flip_pipe = pygame.transform.flip(pipe_surface, False, True)
+            screen.blit(flip_pipe, pipe)
+
 pygame.init()
 
 # vars
@@ -39,6 +59,15 @@ message = pygame.image.load("flappy-bird-assets/sprites/message.png").convert_al
 message = pygame.transform.scale2x(message)
 game_over_rect = message.get_rect(center=(288, 512))
 
+# building pipes
+pipe_surface = pygame.image.load("flappy-bird-assets/sprites/pipe-green.png")
+pipe_surface = pygame.transform.scale2x(pipe_surface)
+pipe_list = []
+pipe_height = [400, 600, 800]
+SPAWNPIPE = pygame.USEREVENT
+pygame.time.set_timer(SPAWNPIPE, 1200)
+
+
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -52,6 +81,8 @@ while True:
                 bird.rect.center = (100, 512)
                 bird_movement = 0
                 game_active = True
+        if event.type == SPAWNPIPE and game_active:
+            pipe_list.extend(create_pipe())
 
     screen.blit(background, (0, 0))
 
@@ -59,6 +90,10 @@ while True:
         bird_movement += gravity
         bird_rect.centery += bird_movement
         screen.blit(bird, bird_rect)
+
+        # draw pipes
+        pipe_list = move_pipes(pipe_list)
+        draw_pipes(pipe_list)
 
         # check for collision
         game_active = check_collision()
